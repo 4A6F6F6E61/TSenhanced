@@ -1,0 +1,19 @@
+int test = 10
+string test2
+
+if test == 10:
+    printf("test")
+end
+
+func test3 = async () =>
+    printf("this is just a test")
+end
+
+test3()
+
+func sqr = (p: number) =>
+    p *= p
+    return p
+end
+
+printf(sqr(2))
