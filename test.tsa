@@ -17,3 +17,13 @@ func sqr = (p: number) =>
 end
 
 printf(sqr(2))
+
+if false:
+    printf("")
+elif true:
+    printf("elif test")
+else:
+    printf("else test")
+end
+
+// deno run output/test.tsa.ts

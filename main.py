@@ -11,7 +11,7 @@ def multiple_files():
         if f.endswith(".tsa"):
             count += 1
             with open(f, "r") as file_:
-                compile(file_, open( "output/" + f + ".ts", "x"))
+                compile(file_, open( "output/" + f[:4] + ".ts", "x"))
         else:
             continue
     assert count != 0, "ERROR: no .tsa file found"
@@ -26,6 +26,11 @@ def compile(file_, output):
         if line.startswith("if "):
             line = "if(" + line[3:]             # replace 'if ' with 'if('
             line = line[:-2] + ") {\n"          # replace ':' with ') {'
+        elif line.startswith("elif "):
+            line = "} else if(" + line[4:]      # replace 'elif' with 'else if'     
+            line = line[:-2] + ") {\n"          # replace : with ) {
+        elif line.startswith("else:"):
+            line = "} else {" + line[5:]      # replace 'elif' with 'else if'
         elif line.startswith("func "):
             line = "const" + line[4:] 
         elif line.startswith("end"):
