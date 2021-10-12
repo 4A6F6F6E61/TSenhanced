@@ -4,7 +4,7 @@
 ```bash
 ./main.py -d [your directory]
 ```
-#### Single file
+#### Single file (not supported)
 ```bash
 ./main.py -f [your file]
 ```
