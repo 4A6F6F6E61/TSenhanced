@@ -1,5 +1,8 @@
 import os
 import sys
+import time
+from decimal import Decimal, Context
+
 
 def single_file():
     print("...")
@@ -11,7 +14,10 @@ def multiple_files():
         if f.endswith(".tsa"):
             count += 1
             with open(f, "r") as file_:
+                start_time = time.time()
                 compile(file_, open( "output/" + f[:4] + ".ts", "x"))
+                process_time = ((time.time() - start_time)*1000)
+                print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
         else:
             continue
     assert count != 0, "ERROR: no .tsa file found"
@@ -72,6 +78,7 @@ def main():
             multiple_files()
         else:
             assert False, "ERROR: please provide a directory"
+    
 
 if __name__ == "__main__":
     main()
