@@ -5,7 +5,7 @@ if test == 11:
     printf("test")
 end
 
-func test3 = async () =>
+func test3 = async () => 
     printf("this is just a test")
 end
 

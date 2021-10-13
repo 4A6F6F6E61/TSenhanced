@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import re
 from decimal import Decimal, Context
 from os.path import exists
 
@@ -36,6 +37,9 @@ def multiple_files(output_dir = "output/"):
 def compile(file_, output):
     for line in file_:
         line = line.lstrip()
+        rm = remove_string(line)
+        line = rm[0]                            # Line without String
+        str_ = rm[1]                            # String 
 
         if line.endswith("=>\n"):
             line = line[:-1] + " {\n"             # arrow func
@@ -69,12 +73,32 @@ def compile(file_, output):
 
         if "printf(" in line:
             line = line.replace("printf(", "console.log(") # replace printf()
+        if "~" in line:
+            line = line.replace("~", str_)
 
         output.write(line)          # push line
 
 def remove_files(dir_):
     for filename in os.listdir(dir_):
         os.remove(dir_ + filename)
+
+def remove_string(text):
+    string = ""
+    text_start = 0
+    text_end = 0
+    d = True
+
+    for m in re.finditer('\"', text):
+        if d:
+            d = False
+            text_start = m.start()
+        else:
+            text_end = m.end()
+    if text_start != 0 and text_end != 0:
+        string = text[text_start:text_end]
+        text = text[:text_start] + "~" + text[text_end:]
+
+    return (text, string)
 
 def main():
     if sys.argv[1] == "-f":
