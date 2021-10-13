@@ -41,14 +41,11 @@ def compile(file_, output):
         line = rm[0]                            # Line without String
         str_ = rm[1]                            # String 
 
-        if line.endswith("=>\n"):
-            line = line[:-1] + " {\n"             # arrow func
-
         if line.startswith("if "):
             line = "if(" + line[3:]             # replace 'if ' with 'if('
             line = line[:-2] + ") {\n"          # replace ':' with ') {'
         elif line.startswith("elif "):
-            line = "} else if(" + line[4:]      # replace 'elif' with 'else if'     
+            line = "} else if(" + line[5:]      # replace 'elif' with 'else if'     
             line = line[:-2] + ") {\n"          # replace : with ) {
         elif line.startswith("else:"):
             line = "} else {" + line[5:]      # replace 'elif' with 'else if'
@@ -75,6 +72,8 @@ def compile(file_, output):
             line = line.replace("printf(", "console.log(") # replace printf()
         if "~" in line:
             line = line.replace("~", str_)
+        if "=>" in line:
+            line = line.replace("=>", "=> {") # replace printf()
 
         output.write(line)          # push line
 

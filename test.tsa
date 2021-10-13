@@ -5,7 +5,7 @@ if test == 11:
     printf("test")
 end
 
-func test3 = async () => 
+func test3 = async () =>    
     printf("this is just a test")
 end
 
@@ -15,7 +15,6 @@ func sqr = (p: number) =>
     p *= p
     return p
 end
-
 printf(sqr(2))
 
 if false:
