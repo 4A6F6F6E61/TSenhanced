@@ -1,7 +1,7 @@
-int test = 10
+int test = 11
 string test2
 
-if test == 10:
+if test == 11:
     printf("test")
 end
 

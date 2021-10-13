@@ -2,12 +2,24 @@ import os
 import sys
 import time
 from decimal import Decimal, Context
+from os.path import exists
 
 
-def single_file():
-    print("...")
+def single_file(f, output_dir = "output/"):
+    if f.endswith(".tsa"):
+        with open(f, "r") as file_:
+            start_time = time.time()
+            remove_files("./" + output_dir)
+            compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
+            process_time = ((time.time() - start_time)*1000)
+            print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
+            print("[INFO]: Deno Output:")
+            print("--------------------")
+            out = os.system("deno run " + output_dir + f[:-4] + ".ts")
+            print("--------------------")
 
-def multiple_files():
+def multiple_files(output_dir = "output/"):
+    remove_files("./" + output_dir)
     count = 0
     files = os.listdir(sys.argv[2])
     for f in files:
@@ -15,7 +27,7 @@ def multiple_files():
             count += 1
             with open(f, "r") as file_:
                 start_time = time.time()
-                compile(file_, open( "output/" + f[:4] + ".ts", "x"))
+                compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
                 process_time = ((time.time() - start_time)*1000)
                 print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
         else:
@@ -63,18 +75,19 @@ def compile(file_, output):
 
 def remove_files(dir_):
     for filename in os.listdir(dir_):
-        os.remove(dir_ + "/" + filename)
+        os.remove(dir_ + filename)
 
 def main():
     if sys.argv[1] == "-f":
         if len(sys.argv) > 2:
-            single_file()
+            single_file(sys.argv[2])
+        elif exists("index.tsa"):
+            single_file("index.tsa")
         else:
             assert False, "ERROR: please provide a file"
 
     elif sys.argv[1] == "-d":
         if len(sys.argv) > 2:
-            remove_files("./output")
             multiple_files()
         else:
             assert False, "ERROR: please provide a directory"

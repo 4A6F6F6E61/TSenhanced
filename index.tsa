@@ -1,0 +1,5 @@
+func idk = () =>
+    printf("index test")
+end
+
+idk()
