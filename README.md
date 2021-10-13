@@ -1,11 +1,20 @@
 # TSenhanced
 ## Compile
-#### Directory
+#### Compile files in directory to TypeScript
 ```bash
-./main.py -d [your directory]
+./main.py -d [directory]
 ```
-#### Compile and execute file with Deno
+#### Compile files in directory to JavaScript (not implemented)
 ```bash
-./main.py -f [File]
+./main.py -j [directory]
+```
+### Compile and execute with Deno
+#### Single File
+```bash
+./main.py -f [file]
+```
+#### All files in directory (not implemented)
+```bash
+./main.py -a [directory]
 ```
 Default file is ```index.tsa```

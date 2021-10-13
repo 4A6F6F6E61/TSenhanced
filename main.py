@@ -4,7 +4,6 @@ import time
 from decimal import Decimal, Context
 from os.path import exists
 
-
 def single_file(f, output_dir = "output/"):
     if f.endswith(".tsa"):
         with open(f, "r") as file_:
