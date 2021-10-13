@@ -4,7 +4,7 @@
 ```bash
 ./main.py -d [your directory]
 ```
-#### Single file (not supported)
+#### Compile Single File and execute the code (not supported)
 ```bash
 ./main.py -f [your file]
 ```
