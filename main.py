@@ -1,67 +1,66 @@
-#!/bin/python
-
+from io import TextIOWrapper
 import os
 import sys
 import time
 import re
-from decimal import Decimal, Context
+from decimal import Context
 from os.path import exists
 
-def single_file(f, output_dir = "output/"):
+def single_file(f: str, output_dir: str = "output/"):
     if f.endswith(".tsa"):
         with open(f, "r") as file_:
-            start_time = time.time()
+            start_time = time.perf_counter()
             remove_files("./" + output_dir)
             compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
-            process_time = ((time.time() - start_time)*1000)
+            process_time = ((time.perf_counter() - start_time)*1000)
             print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
             print("[INFO]: Deno Output:")
             print("--------------------")
             out = os.system("deno run " + output_dir + f[:-4] + ".ts")
             print("--------------------")
 
-def multiple_files(output_dir = "output/"):
+def multiple_files(output_dir: str = "output/"):
     remove_files("./" + output_dir)
-    count = 0
-    files = os.listdir(sys.argv[2])
+    count: int = 0
+    files: list[str] = os.listdir(sys.argv[2])
     for f in files:
         if f.endswith(".tsa"):
             count += 1
             with open(f, "r") as file_:
-                start_time = time.time()
+                start_time = time.perf_counter()
                 compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
-                process_time = ((time.time() - start_time)*1000)
+                process_time = ((time.perf_counter() - start_time)*1000)
                 print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
         else:
             continue
     assert count != 0, "ERROR: no .tsa file found"
 
-def compile(file_, output):
+def compile(file_: TextIOWrapper, output: TextIOWrapper):
     for line in file_:
-        line = line.lstrip()
-        rm = remove_string(line)
-        line = rm[0]                            # Line without String
-        str_ = rm[1]                            # String 
+        line: str = line.lstrip()                       # remove whitespace from the left
+        rm: tuple = remove_string(line)                 # remove string from line
+    line: str = rm[0]                                   # Line without String
+        str_: str = rm[1]                               # String without Line
 
         if line.startswith("if "):
-            line = "if(" + line[3:]             # replace 'if ' with 'if('
-            line = line[:-2] + ") {\n"          # replace ':' with ') {'
+            line = "if(" + line[3:]                     # replace 'if ' with 'if('
+            line = line[:-2] + ") {\n"                  # replace ':' with ') {'
         elif line.startswith("elif "):
-            line = "} else if(" + line[5:]      # replace 'elif' with 'else if'     
-            line = line[:-2] + ") {\n"          # replace : with ) {
+            line = "} else if(" + line[5:]              # replace 'elif' with 'else if'     
+            line = line[:-2] + ") {\n"                  # replace : with ) {
         elif line.startswith("else:"):
-            line = "} else {" + line[5:]      # replace 'elif' with 'else if'
+            line = "} else {" + line[5:]                # replace 'elif' with 'else if'
         elif line.startswith("func "):
-            line = "const" + line[4:] 
+            line = f"const{line[4:]}" 
         elif line.startswith("end"):
-            line = "}" + line[3:]               # replace 'end' with '}'
+            line = "}" + line[3:]                       # replace 'end' with '}' 
         elif line.startswith("string"):
-            line = "let" + line[6:]
+            line = f"let{line[6:]}"
             if " =" in line:
                 line = line.replace("=", ":string =")
             else:
                 line = line[:-1]
-                line += ":string\n"               # String
+                line += ":string\n"               
         elif line.startswith("int"):
                 line = "let" + line[3:]
                 if " =" in line:
@@ -71,23 +70,23 @@ def compile(file_, output):
                     line += ":number\n"
 
         if "printf(" in line:
-            line = line.replace("printf(", "console.log(") # replace printf()
+            line = line.replace("printf(", "console.log(") # replace printf() with console.log()
         if "~" in line:
-            line = line.replace("~", str_)
+            line = line.replace("~", str_)              # replace ~ with string
         if "=>" in line:
-            line = line.replace("=>", "=> {") # replace printf()
+            line = line.replace("=>", "=> {")           # replace => with => {
 
-        output.write(line)          # push line
+        output.write(line)                              # push line
 
-def remove_files(dir_):
+def remove_files(dir_: str):
     for filename in os.listdir(dir_):
         os.remove(dir_ + filename)
 
-def remove_string(text):
-    string = ""
-    text_start = 0
-    text_end = 0
-    d = True
+def remove_string(text: str) -> tuple:
+    string: str = ""
+    text_start: int = 0
+    text_end: int = 0
+    d: bool = True
 
     for m in re.finditer('\"', text):
         if d:

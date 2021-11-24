@@ -25,4 +25,4 @@ else:
     printf("else test")
 end
 
-// deno run output/test.tsa.ts
+// deno run output/test.ts
