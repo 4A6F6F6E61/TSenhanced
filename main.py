@@ -10,17 +10,18 @@ def single_file(f: str, output_dir: str = "output/"):
     if f.endswith(".tsa"):
         with open(f, "r") as file_:
             start_time = time.perf_counter()
-            remove_files("./" + output_dir)
-            compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
+            remove_files(f"./{output_dir}")
+            with open( f"{output_dir + f[:-4]}.ts", "x") as open_out:
+                compile(file_, open_out)
             process_time = ((time.perf_counter() - start_time)*1000)
-            print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
+            print(f"[INFO]: Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
             print("[INFO]: Deno Output:")
             print("--------------------")
-            out = os.system("deno run " + output_dir + f[:-4] + ".ts")
+            out = os.system(f"deno run {output_dir + f[:-4]}.ts")
             print("--------------------")
 
 def multiple_files(output_dir: str = "output/"):
-    remove_files("./" + output_dir)
+    remove_files(f"./{output_dir}")
     count: int = 0
     files: list[str] = os.listdir(sys.argv[2])
     for f in files:
@@ -28,9 +29,10 @@ def multiple_files(output_dir: str = "output/"):
             count += 1
             with open(f, "r") as file_:
                 start_time = time.perf_counter()
-                compile(file_, open( output_dir + f[:-4] + ".ts", "x"))
+                compile(file_, open(f"{output_dir + f[:-4]}.ts", "x"))
                 process_time = ((time.perf_counter() - start_time)*1000)
-                print("[INFO]: Successfully Compiled %s in %sms" % (file_.name ,Context(prec=1).create_decimal(process_time)))
+                print(f"[INFO]: Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
+
         else:
             continue
     assert count != 0, "ERROR: no .tsa file found"
@@ -96,7 +98,7 @@ def remove_string(text: str) -> tuple:
             text_end = m.end()
     if text_start != 0 and text_end != 0:
         string = text[text_start:text_end]
-        text = text[:text_start] + "~" + text[text_end:]
+        text = f"{text[:text_start]}~{text[text_end:]}"
 
     return (text, string)
 

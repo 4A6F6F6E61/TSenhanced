@@ -1,3 +1,5 @@
-;(function() {
+func test = () =>
     printf("Welcome to my Programming language!")
-end)
+end
+
+test()
