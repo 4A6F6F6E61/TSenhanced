@@ -39,7 +39,7 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
     for line in file_:
         line: str = line.lstrip()                       # remove whitespace from the left
         rm: tuple = remove_string(line)                 # remove string from line
-    line: str = rm[0]                                   # Line without String
+        line: str = rm[0]                               # Line without String
         str_: str = rm[1]                               # String without Line
 
         if line.startswith("if "):
@@ -110,10 +110,8 @@ def main():
             assert False, "ERROR: please provide a file"
 
     elif sys.argv[1] == "-d":
-        if len(sys.argv) > 2:
-            multiple_files()
-        else:
-            assert False, "ERROR: please provide a directory"
+        assert len(sys.argv) > 2, "ERROR: please provide a directory"
+        multiple_files()
     
 
 if __name__ == "__main__":
