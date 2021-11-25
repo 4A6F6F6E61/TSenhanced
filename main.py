@@ -109,9 +109,11 @@ def main():
         elif exists("index.tsa"):
             single_file("index.tsa")
         else:
+            # FIXME: Use print not assert
             assert False, "ERROR: please provide a file"
 
     elif sys.argv[1] == "-d":
+        # FIXME: Use print not assert
         assert len(sys.argv) > 2, "ERROR: please provide a directory"
         multiple_files()
     
