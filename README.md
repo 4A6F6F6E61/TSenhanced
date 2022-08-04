@@ -14,15 +14,15 @@ $ ./main.py -d [directory]
 $ ./main.py -j [directory]
 ```
 
-### Compile and execute with Deno
+## Compile and execute with Deno
 
-#### Single File
+### Single File
 
 ```bash
 $ ./main.py -f [file]
 ```
 
-#### All files in directory
+### All files in directory
 
 ```bash
 $ ./main.py -a [directory]
