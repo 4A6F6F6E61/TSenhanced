@@ -75,6 +75,9 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
             line = "if(" + line[3:]                     # replace 'if ' with 'if('
             #line = line[:-1] + ") {\n"                  # replace ':' with ') {'
             line = line.replace("then", ") {")       # replace 'then' with ') {'
+        if line.startswith("for "):
+            line = "for(" + line[4:]                     # replace 'for ' with 'for('
+            line = line.replace("do", ") {")       # replace 'then' with ') {'
         elif line.startswith("elif "):
             line = "} else if(" + line[5:]              # replace 'elif' with 'else if'     
             #line = line[:-2] + ") {\n"                  # replace : with ) {

@@ -19,6 +19,18 @@ function test = () => do
     t.plus()
     t.plus()
     printf(t.count)
+
+    for let i in range(10000) do
+        printf(i)
+    end
+end
+
+function range = (count: number) => do
+    let result: Array<number> = [] 
+    for let i = 0; i < count; i++  do
+        result.push(i)
+    end
+    return result
 end
 
 test()

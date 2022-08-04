@@ -14,18 +14,30 @@ $ ./main.py -d [directory]
 $ ./main.py -j [directory]
 ```
 
-## Compile and execute with Deno
+## Compile and execute
 
-### Single File
+### Single File with Deno
 
 ```bash
 $ ./main.py -f [file]
 ```
 
-### All files in directory
+### Single File with Bun
+
+```bash
+$ ./main.py -f [file] -bun
+```
+
+### All files in directory with Deno
 
 ```bash
 $ ./main.py -a [directory]
+```
+
+### All files in directory with Bun
+
+```bash
+$ ./main.py -a [directory] -bun
 ```
 
 Default file is `index.tsa`
