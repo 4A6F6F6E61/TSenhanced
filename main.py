@@ -20,8 +20,15 @@ class log:
     
     def bar():
         print(c("--------------------", "grey", attrs=["dark"]))
+    
+    def runtime(msg: str, runtime: str):
+        print(c(f"[{runtime}]", "green", attrs=["dark"]) + c(": ", "grey", attrs=["dark"]) + msg)
 
-def single_file(f: str, output_dir: str = "output/"):
+def single_file(f: str, runtime: str, output_dir: str = "output/"):
+    if not exists(f):
+        log.error(f"File {f} not found")
+        return
+
     if f.endswith(".tsa"):
         with open(f, "r") as file_:
             start_time = time.perf_counter()
@@ -30,15 +37,16 @@ def single_file(f: str, output_dir: str = "output/"):
                 compile(file_, open_out)
             process_time = ((time.perf_counter() - start_time)*1000)
             log.info(f"Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
-            log.info("Deno Output:")
+            log.runtime(msg="Output:", runtime=runtime)
             log.bar()
-            out = os.system(f"deno run {output_dir + f[:-4]}.ts")
+            out = os.system(f"{runtime} run {output_dir + f[:-4]}.ts")
             log.bar()
 
 def multiple_files(output_dir: str = "output/"):
     remove_files(f"./{output_dir}")
     count: int = 0
     files: list[str] = os.listdir(sys.argv[2])
+    log.bar()
     for f in files:
         if f.endswith(".tsa"):
             count += 1
@@ -52,6 +60,7 @@ def multiple_files(output_dir: str = "output/"):
 
         else:
             continue
+    log.bar()
     if count == 0: log.error("No .tsa file found")
 
 
@@ -103,6 +112,7 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
 def remove_files(dir_: str):
     for filename in os.listdir(dir_):
         os.remove(dir_ + filename)
+    log.info("Successfully removed all files in output directory")
 
 def remove_string(text: str) -> tuple:
     string: str = ""
@@ -123,13 +133,23 @@ def remove_string(text: str) -> tuple:
     return (text, string)
 
 def main():
+    runtime = "deno"
+    if sys.argv[len(sys.argv)-1] == "-bun":
+        runtime = "bun"
     if len(sys.argv) == 1:
         log.error("Please provide more arguments")
     elif sys.argv[1] == "-f":
         if len(sys.argv) > 2:
-            single_file(sys.argv[2])
+            if sys.argv[2] == "-bun":
+                runtime = "bun"
+                if exists("index.tsa"):
+                    single_file("index.tsa", runtime)
+                else:
+                    log.error("Please provide a file")
+            else:
+                single_file(sys.argv[2], runtime)
         elif exists("index.tsa"):
-            single_file("index.tsa")
+            single_file("index.tsa", runtime)
         else:
             log.error("Please provide a file")
 
