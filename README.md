@@ -5,7 +5,7 @@
 #### Compile files in directory to TypeScript
 
 ```bash
-    $ ./main.py -d [directory]
+$ ./main.py -d [directory]
 ```
 
 #### Compile files in directory to JavaScript (not implemented)
