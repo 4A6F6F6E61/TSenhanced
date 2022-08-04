@@ -2,13 +2,13 @@
 
 ## Compile
 
-#### Compile files in directory to TypeScript
+### Compile files in directory to TypeScript
 
 ```bash
 $ ./main.py -d [directory]
 ```
 
-#### Compile files in directory to JavaScript (not implemented)
+### Compile files in directory to JavaScript (not implemented)
 
 ```bash
 $ ./main.py -j [directory]
