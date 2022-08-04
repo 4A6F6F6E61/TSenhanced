@@ -1,5 +1,24 @@
-func test = () =>
+type int = number
+
+class tClass do
+    count = 0
+    plus() do
+        this.count = this.count + 1
+    end
+end
+
+function test = () => do
+    let test: int = 10
+    test = 20
+    if test == 20 then
+        printf("yes")
+    end
+    printf(test)
     printf("Welcome to my Programming language!")
+    let t = new tClass()
+    t.plus()
+    t.plus()
+    printf(t.count)
 end
 
 test()

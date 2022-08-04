@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin python3
 
 from io import TextIOWrapper
 import os
@@ -7,6 +7,19 @@ import time
 import re
 from decimal import Context
 from os.path import exists
+from colorama import init as initColorama
+from termcolor import colored as c
+
+initColorama()
+class log:
+    def info(msg: str):
+        print(c("[INFO]", "green") + c(": ", "grey", attrs=["dark"]) + msg)
+
+    def error(msg: str):
+        print(c("[ERROR]", "red") + c(": ", "grey", attrs=["dark"]) + msg)
+    
+    def bar():
+        print(c("--------------------", "grey", attrs=["dark"]))
 
 def single_file(f: str, output_dir: str = "output/"):
     if f.endswith(".tsa"):
@@ -16,11 +29,11 @@ def single_file(f: str, output_dir: str = "output/"):
             with open( f"{output_dir + f[:-4]}.ts", "x") as open_out:
                 compile(file_, open_out)
             process_time = ((time.perf_counter() - start_time)*1000)
-            print(f"[INFO]: Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
-            print("[INFO]: Deno Output:")
-            print("--------------------")
+            log.info(f"Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
+            log.info("Deno Output:")
+            log.bar()
             out = os.system(f"deno run {output_dir + f[:-4]}.ts")
-            print("--------------------")
+            log.bar()
 
 def multiple_files(output_dir: str = "output/"):
     remove_files(f"./{output_dir}")
@@ -33,11 +46,14 @@ def multiple_files(output_dir: str = "output/"):
                 start_time = time.perf_counter()
                 compile(file_, open(f"{output_dir + f[:-4]}.ts", "x"))
                 process_time = ((time.perf_counter() - start_time)*1000)
-                print(f"[INFO]: Successfully Compiled {file_.name} in {Context(prec=1).create_decimal(process_time)}ms")
+                t = Context(prec=1).create_decimal(process_time)
+                c_time = c(f"{t}ms", "cyan")
+                log.info(f"Successfully Compiled {file_.name} in {c_time}")
 
         else:
             continue
-    assert count != 0, "ERROR: no .tsa file found"
+    if count == 0: log.error("No .tsa file found")
+
 
 def compile(file_: TextIOWrapper, output: TextIOWrapper):
     for line in file_:
@@ -48,14 +64,16 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
 
         if line.startswith("if "):
             line = "if(" + line[3:]                     # replace 'if ' with 'if('
-            line = line[:-2] + ") {\n"                  # replace ':' with ') {'
+            #line = line[:-1] + ") {\n"                  # replace ':' with ') {'
+            line = line.replace("then", ") {")       # replace 'then' with ') {'
         elif line.startswith("elif "):
             line = "} else if(" + line[5:]              # replace 'elif' with 'else if'     
-            line = line[:-2] + ") {\n"                  # replace : with ) {
-        elif line.startswith("else:"):
-            line = "} else {" + line[5:]                # replace 'elif' with 'else if'
-        elif line.startswith("func "):
-            line = f"const{line[4:]}" 
+            #line = line[:-2] + ") {\n"                  # replace : with ) {
+            line = line.replace("then", ") {")       # replace 'then' with ') {'
+        elif line.startswith("else then"):
+            line = "} else {\n" + line[10:]                # replace 'elif' with 'else if'
+        elif line.startswith("function "):
+            line = f"const  {line[8:]}" 
         elif line.startswith("end"):
             line = "}" + line[3:]                       # replace 'end' with '}' 
         elif line.startswith("string"):
@@ -77,8 +95,8 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
             line = line.replace("printf(", "console.log(") # replace printf() with console.log()
         if "~" in line:
             line = line.replace("~", str_)              # replace ~ with string
-        if "=>" in line:
-            line = line.replace("=>", "=> {")           # replace => with => {
+        if "do" in line:
+            line = line.replace("do", "{")           # replace => with => {
 
         output.write(line)                              # push line
 
@@ -105,19 +123,21 @@ def remove_string(text: str) -> tuple:
     return (text, string)
 
 def main():
-    if sys.argv[1] == "-f":
+    if len(sys.argv) == 1:
+        log.error("Please provide more arguments")
+    elif sys.argv[1] == "-f":
         if len(sys.argv) > 2:
             single_file(sys.argv[2])
         elif exists("index.tsa"):
             single_file("index.tsa")
         else:
-            # FIXME: Use print not assert
-            assert False, "ERROR: please provide a file"
+            log.error("Please provide a file")
 
     elif sys.argv[1] == "-d":
-        # FIXME: Use print not assert
-        assert len(sys.argv) > 2, "ERROR: please provide a directory"
-        multiple_files()
+        if not len(sys.argv) > 2:
+            log.error("Please provide a directory")
+        else:
+            multiple_files()
     
 
 if __name__ == "__main__":

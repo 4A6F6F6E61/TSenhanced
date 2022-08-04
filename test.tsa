@@ -1,27 +1,28 @@
 int test = 11
 string test2
 
-if test == 11:
+if test == 11 then
     printf("test")
 end
 
-func test3 = async () =>    
+function test3 = async () => do 
     printf("this is just a test")
 end
 
 test3()
 
-func sqr = (p: number) =>
+function sqr = (p: number) => do
     p *= p
     return p
 end
+
 printf(sqr(2))
 
-if false:
+if false then
     printf("")
-elif true:
+elif true then
     printf("elif test")
-else:
+else then
     printf("else test")
 end
 
