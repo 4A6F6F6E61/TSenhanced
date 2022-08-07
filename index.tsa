@@ -1,33 +1,44 @@
 type int = number
 
 class tClass do
-    count = 0
-    plus() do
-        this.count = this.count + 1
+    private _count: int
+    public constructor(public start: number) do
+        this._count = start
+    end
+
+    public plus(): void do
+        this._count = this._count + 1
+    end
+
+    public get count(): int do
+        return this._count
+    end
+
+    public set count(value: int) do
+        this._count = value
     end
 end
 
-function test = () => do
+function test = (): void begin
     let test: int = 10
     test = 20
     if test == 20 then
         printf("yes")
     end
-    printf(test)
-    printf("Welcome to my Programming language!")
-    let t = new tClass()
-    t.plus()
+    let t: tClass = new tClass(10)
     t.plus()
     printf(t.count)
-
-    for let i in range(10000) do
+    let i: any = null
+    for i in range(10) do
         printf(i)
     end
 end
 
-function range = (count: number) => do
-    let result: Array<number> = [] 
-    for let i = 0; i < count; i++  do
+function! range (count: number): Array<number> do
+    let result: Array<number> = []
+    function test = 10
+    printf(test)
+    for let i = 0; i < count; i++ do
         result.push(i)
     end
     return result

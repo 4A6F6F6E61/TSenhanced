@@ -1,5 +1,6 @@
 #!/usr/local/bin python3
 
+from audioop import mul
 from io import TextIOWrapper
 import os
 import sys
@@ -23,6 +24,20 @@ class log:
     
     def runtime(msg: str, runtime: str):
         print(c(f"[{runtime}]", "green", attrs=["dark"]) + c(": ", "grey", attrs=["dark"]) + msg)
+
+class Keywords:
+    _if       = "if "
+    _for      = "for "
+    elseIf    = "elif "
+    _else     = "else then"
+    functionC = "function "
+    function  = "function! "
+    cBracket  = "end"
+    oBracket  = "do"
+    arrowB    = "begin"
+    then      = "then"
+
+
 
 def single_file(f: str, runtime: str, output_dir: str = "output/"):
     if not exists(f):
@@ -52,7 +67,7 @@ def multiple_files(output_dir: str = "output/"):
             count += 1
             with open(f, "r") as file_:
                 start_time = time.perf_counter()
-                compile(file_, open(f"{output_dir + f[:-4]}.ts", "x"))
+                compile(file_, open(f"{output_dir + f}.ts", "x"))
                 process_time = ((time.perf_counter() - start_time)*1000)
                 t = Context(prec=1).create_decimal(process_time)
                 c_time = c(f"{t}ms", "cyan")
@@ -71,23 +86,25 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
         line: str = rm[0]                               # Line without String
         str_: str = rm[1]                               # String without Line
 
-        if line.startswith("if "):
-            line = "if(" + line[3:]                     # replace 'if ' with 'if('
+        if line.startswith(Keywords._if):
+            line = "if(" + line[len(Keywords._if):]                     # replace 'if ' with 'if('
             #line = line[:-1] + ") {\n"                  # replace ':' with ') {'
-            line = line.replace("then", ") {")       # replace 'then' with ') {'
-        if line.startswith("for "):
-            line = "for(" + line[4:]                     # replace 'for ' with 'for('
-            line = line.replace("do", ") {")       # replace 'then' with ') {'
-        elif line.startswith("elif "):
-            line = "} else if(" + line[5:]              # replace 'elif' with 'else if'     
+            line = line.replace(Keywords.then, ") {")       # replace 'then' with ') {'
+        if line.startswith(Keywords._for):
+            line = "for(" + line[len(Keywords._for):]                     # replace 'for ' with 'for('
+            line = line.replace(" do", ") {")       # replace 'then' with ') {'
+        elif line.startswith(Keywords.elseIf):
+            line = "} else if(" + line[len(Keywords.elseIf):]              # replace 'elif' with 'else if'     
             #line = line[:-2] + ") {\n"                  # replace : with ) {
-            line = line.replace("then", ") {")       # replace 'then' with ') {'
-        elif line.startswith("else then"):
-            line = "} else {\n" + line[10:]                # replace 'elif' with 'else if'
-        elif line.startswith("function "):
-            line = f"const  {line[8:]}" 
-        elif line.startswith("end"):
-            line = "}" + line[3:]                       # replace 'end' with '}' 
+            line = line.replace(Keywords.then, ") {")       # replace 'then' with ') {'
+        elif line.startswith(Keywords._else):
+            line = "} else {\n" + line[len(Keywords._else):]                # replace 'elif' with 'else if'
+        elif line.startswith(Keywords.functionC):
+            line = f"const {line[len(Keywords.functionC):]}"
+        elif line.startswith(Keywords.function):
+            line = f"function {line[len(Keywords.functionC):]}"
+        elif line.startswith(Keywords.cBracket):
+            line = "}" + line[len(Keywords.cBracket):]                       # replace 'end' with '}'
         elif line.startswith("string"):
             line = f"let{line[6:]}"
             if " =" in line:
@@ -108,7 +125,9 @@ def compile(file_: TextIOWrapper, output: TextIOWrapper):
         if "~" in line:
             line = line.replace("~", str_)              # replace ~ with string
         if "do" in line:
-            line = line.replace("do", "{")           # replace => with => {
+            line = line.replace("do", "{")           # replace do with => {
+        if "begin" in line:
+            line = line.replace("begin", "=> {")           # replace do with => {
 
         output.write(line)                              # push line
 
@@ -159,9 +178,13 @@ def main():
     elif sys.argv[1] == "-d":
         if not len(sys.argv) > 2:
             log.error("Please provide a directory")
+        elif sys.argv[3].startswith("-o="):
+            t_p = sys.argv[3][3:]
+            t_p = t_p[1:] if t_p[0] == "\"" or t_p[0] == "/" else t_p
+            t_p = t_p + "/" if not t_p.endswith("/") else t_p
+            multiple_files(t_p)
         else:
             multiple_files()
-    
 
 if __name__ == "__main__":
     main()
