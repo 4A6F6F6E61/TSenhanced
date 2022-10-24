@@ -1,5 +1,7 @@
 # TSenhanced
 
+Alternate Syntax for Typescript.
+
 ## Compile
 
 ### Compile files in directory to TypeScript
